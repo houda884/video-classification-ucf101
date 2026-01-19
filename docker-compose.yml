@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  mlflow:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/app/mlruns
+      - ./data:/app/data
+      - ./models:/app/models  # Ajouté pour cohérence
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlruns/mlflow.db
+    environment:
+      - MLFLOW_TRACKING_URI=http://localhost:5000
+
+  training:
+    build: .
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./mlruns:/app/mlruns  # Ajouté pour partager les runs MLflow
+    command: python train_pipeline.py
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+    restart: on-failure  # Permet de réessayer si MLflow n'est pas prêt
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./mlruns:/app/mlruns  # Optionnel, selon vos besoins
+    command: uvicorn app.app:app --host 0.0.0.0 --port 8000
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+      - training
+    restart: on-failure
+
+  streamlit:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data  # Ajouté si Streamlit a besoin de données
+    command: streamlit run app/app.py --server.port 8501 --server.address 0.0.0.0
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000  # Ajouté pour cohérence
+    depends_on:
+      - api
+    restart: on-failure
