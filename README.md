@@ -10,6 +10,7 @@ Il inclut :
 - Extension Sécurité : détection **Normal / Tamper**.
 
 ---
+[![Demo](https://img.shields.io/badge/Demo-Live-green)](https://ton-lien-demo.com)
 
 ## 📂 Structure du projet
 
