@@ -10,7 +10,7 @@ Il inclut :
 - Extension Sécurité : détection **Normal / Tamper**.
 
 ---
-[![Demo](https://img.shields.io/badge/Demo-Live-green)](https://ton-lien-demo.com)
+[![Demo](https://img.shields.io/badge/Demo-Live-green)]([https://ton-lien-demo.com](https://github.com/houda884/video-classification-ucf101/blob/main/demo_KTuRFbf1.mp4))
 
 ## 📂 Structure du projet
 
